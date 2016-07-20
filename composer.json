@@ -1,0 +1,16 @@
+{
+  "name": "dsl/cache-control",
+  "description": "Cache control utils",
+  "type": "library",
+  "require": {
+    "doctrine/cache": "^1",
+    "predis/predis": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.7"
+  },
+  "license": "Apache License 2.0",
+  "autoload": {
+    "psr-4": {"CacheControl\\": "src/"}
+  }
+}
