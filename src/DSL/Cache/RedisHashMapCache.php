@@ -1,9 +1,10 @@
 <?php
 
-namespace CacheControl\Cache;
+namespace DSL\Cache;
 
 use Doctrine\Common\Cache\Cache;
 use Predis\Client;
+use Predis\Response\Status;
 
 class RedisHashMapCache implements Cache
 {
@@ -24,20 +25,38 @@ class RedisHashMapCache implements Cache
      */
     public function fetch($id)
     {
-        return $this->client->hgetall($id);
+        $data = $this->client->hgetall($id);
+
+        return $data ?: false;
     }
 
     /**
      * {@inheritdoc}
+     * @throws \InvalidArgumentException
      */
     public function save($id, $data, $lifeTime = 0)
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(sprintf('data should be an array, "%s" was given', gettype($data)));
+        }
+
+        if (!$data) {
+            throw new \InvalidArgumentException('data array should contain at least one key');
+        }
+
+        foreach ($data as $value) {
+            if (!is_scalar($value) && !is_null($value)) {
+                throw new \InvalidArgumentException('data array should have only scalar or null values');
+            }
+        }
+
+        /** @var Status $result */
         $result = $this->client->hmset($id, $data);
         if ($lifeTime) {
             $this->client->expire($id, $lifeTime);
         }
 
-        return $result;
+        return 'OK' == $result->getPayload();
     }
 
     /**
@@ -45,7 +64,7 @@ class RedisHashMapCache implements Cache
      */
     public function delete($id)
     {
-        return $this->client->del([$id]);
+        return (bool) $this->client->del([$id]);
     }
 
     /**
@@ -53,7 +72,7 @@ class RedisHashMapCache implements Cache
      */
     public function contains($id)
     {
-        return $this->client->exists($id);
+        return (bool) $this->client->exists($id);
     }
 
     /**

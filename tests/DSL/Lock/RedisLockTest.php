@@ -1,6 +1,6 @@
 <?php
 
-namespace CacheControl\Lock;
+namespace DSL\Lock;
 
 use Predis\Client;
 

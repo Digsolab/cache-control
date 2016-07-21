@@ -1,6 +1,6 @@
 <?php
 
-namespace CacheControl;
+namespace DSL;
 
 interface LockInterface
 {

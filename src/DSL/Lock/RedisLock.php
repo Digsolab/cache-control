@@ -1,8 +1,8 @@
 <?php
 
-namespace CacheControl\Lock;
+namespace DSL\Lock;
 
-use CacheControl\LockInterface;
+use DSL\LockInterface;
 use Predis\Client;
 
 class RedisLock implements LockInterface

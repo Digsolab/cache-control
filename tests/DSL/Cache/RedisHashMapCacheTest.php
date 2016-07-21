@@ -1,9 +1,10 @@
 <?php
 
-namespace CacheControl\Cache;
+namespace DSL\Cache;
 
 use Doctrine\Common\Cache\Cache;
 use Predis\Client;
+use Predis\Response\Status;
 
 class RedisHashMapCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,11 +44,33 @@ class RedisHashMapCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, $result);
     }
 
+    public function saveExceptionDataProvider()
+    {
+        return [
+            [null],
+            [''],
+            [1],
+            [[]],
+            [[1 => []]],
+        ];
+    }
+
+    /**
+     * @param mixed $value
+     * @expectedException \InvalidArgumentException
+     * @dataProvider saveExceptionDataProvider
+     */
+    public function testSaveException($value)
+    {
+        $cache = new RedisHashMapCache($this->client);
+        $cache->save('test1', $value);
+    }
+
     public function saveDataProvider()
     {
         return [
-            ['a', 'abc', 0],
-            ['b', [1, 2], 500]
+            ['a', [1], 0, 'OK', true],
+            ['b', [1, 2], 500, 'ERR', false]
         ];
     }
 
@@ -55,10 +78,14 @@ class RedisHashMapCacheTest extends \PHPUnit_Framework_TestCase
      * @param string $key
      * @param mixed $value
      * @param int $expire
+     * @param string $payload
+     * @param bool $expects
      * @dataProvider saveDataProvider
      */
-    public function testSave($key, $value, $expire)
+    public function testSave($key, $value, $expire, $payload, $expects)
     {
+        $this->client->method('hmset')->willReturn(new Status($payload));
+
         $this->client->expects($this->once())->method('hmset')->with($key, $value);
         if ($expire) {
             $this->client->expects($this->once())->method('expire')->with($key, $expire);
@@ -66,7 +93,9 @@ class RedisHashMapCacheTest extends \PHPUnit_Framework_TestCase
 
         $cache = new RedisHashMapCache($this->client);
 
-        $cache->save($key, $value, $expire);
+        $result = $cache->save($key, $value, $expire);
+
+        $this->assertTrue($result === $expects);
     }
 
     public function testDelete()

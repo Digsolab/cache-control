@@ -3,6 +3,7 @@
   "description": "Cache control utils",
   "type": "library",
   "require": {
+    "php": ">=5.5",
     "doctrine/cache": "^1",
     "predis/predis": "^1.0"
   },
@@ -11,6 +12,14 @@
   },
   "license": "Apache License 2.0",
   "autoload": {
-    "psr-4": {"CacheControl\\": "src/"}
-  }
+    "psr-4": {"DSL\\": "src/DSL"}
+  },
+  "authors": [
+    {
+      "name": "Oleg Ojamäe",
+      "email": "o.ojamae@digsolab.com",
+      "homepage": "https://github.com/oleko-dundich",
+      "role": "Developer"
+    }
+  ]
 }
