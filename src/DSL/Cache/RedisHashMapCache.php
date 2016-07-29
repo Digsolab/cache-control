@@ -3,19 +3,19 @@
 namespace DSL\Cache;
 
 use Doctrine\Common\Cache\Cache;
-use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Response\Status;
 
 class RedisHashMapCache implements Cache
 {
 
-    /** @var Client  */
+    /** @var ClientInterface  */
     private $client;
 
     /**
-     * @param Client $client
+     * @param ClientInterface $client
      */
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
     }
