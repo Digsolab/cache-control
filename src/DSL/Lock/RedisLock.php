@@ -3,18 +3,18 @@
 namespace DSL\Lock;
 
 use DSL\LockInterface;
-use Predis\Client;
+use Predis\ClientInterface as RedisClient;
 
 class RedisLock implements LockInterface
 {
 
-    /** @var Client */
+    /** @var RedisClient */
     private $client;
 
     /**
-     * @param Client $client
+     * @param RedisClient $client
      */
-    public function __construct(Client $client)
+    public function __construct(RedisClient $client)
     {
         $this->client = $client;
     }
